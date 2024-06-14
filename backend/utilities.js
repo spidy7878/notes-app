@@ -16,7 +16,7 @@ function authenticateToken(req, res, next) {
         }
 
         console.log('Token verified, user:', user); // Log the user
-        req.user = user;
+        // req.user = user;
         next();
     });
 }

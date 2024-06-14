@@ -3,16 +3,11 @@ export const  validateEmail = (email) => {
     return regex.test(email);  
 };
 
-export const getInitials = (name) => {
-    if(!name) return "";
-
-    const words = name.split(" ");
-    let initials = "";
-
-    for(let i=0; i < Math.min(words.length,2); i++)
-    {
-        initials+=words[i][0];
-    }
-
-    return initials.toUpperCase();
-}
+// utils/helper.js
+export const getInitials = (fullName) => {
+    if (!fullName) return '';
+    const names = fullName.split(' ');
+    const initials = names.map(name => name.charAt(0).toUpperCase()).join('');
+    return initials;
+  };
+  

@@ -177,13 +177,30 @@ app.post('/login', async (req, res) => {
   const user = await User.findOne({ email });
   if (!user || user.password !== password) return res.status(401).json({ message: 'Invalid email or password' });
 
-  const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '36000m' });
+  const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
   res.json({ message: 'Login successful', accessToken });
 });
+
+// Get User
+app.get('/get-user', authenticateToken, async (req, res) => {
+    //const { user } = req.user;
+
+    const isUser = await User.findOne({});
+
+    if(!isUser){
+      return res.sendStatus(401);
+    }
+
+    return res.json({
+      user: { fullName: isUser.fullName, email: isUser.email, "_id": isUser._id, createdOn: isUser.createdOn},
+      message: " ",
+    });
+});
+
 //Add Note
 app.post('/add-note', authenticateToken, async (req, res) => {
   const { title, content, tags } = req.body;
-  const userId = req.user.userId;
+  //const userId = req.user.userId;
 
   if (!title) return res.status(400).json({ error: true, message: 'Title is required' });
   if (!content) return res.status(400).json({ error: true, message: 'Content is required' });
@@ -193,7 +210,7 @@ app.post('/add-note', authenticateToken, async (req, res) => {
       title,
       content,
       tags: tags || [],
-      userId
+      //userId
     });
 
     await note.save();
@@ -207,15 +224,15 @@ app.post('/add-note', authenticateToken, async (req, res) => {
 //edit-note
 app.put('/edit-note/:noteId', authenticateToken, async (req, res) => {
   const noteId = req.params.noteId;
-  const { title, content, tags, isPinned } = req.body;
-  const userId = req.user.userId;
+  //const { title, content, tags, isPinned } = req.body;
+  //const userId = req.user.userId;
 
   if (!title && !content && !tags && typeof isPinned === 'undefined') {
     return res.status(400).json({ error: true, message: "No changes provided" });
   }
 
   try {
-    const note = await Note.findOne({ _id: noteId, userId });
+    const note = await Note.findOne({ _id: noteId });
 
     if (!note) {
       return res.status(404).json({ error: true, message: "Note not found" });
@@ -267,43 +284,51 @@ app.get('/get-all-notes', authenticateToken, async (req, res) => {
   }
 });
 // delete note
-app.delete("/delete-note/:noteId", authenticateToken, async(req,res) => {
-  const noteId = req.params.noteId;
-  const { user } = req.user;
+app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
+  try {
+    //const noteId = req.params.noteId;
+    //const user = req.user;
 
-  try{
-    const note = await Note.findOne({_id:noteId, userId: user._id});
-    if(!note){
+    //console.log(`Attempting to delete note with ID: ${noteId} for user: ${userId}`);
+
+    const note = await Note.findOne({ });
+    if (!note) {
+      console.error('Note not found');
       return res.status(404).json({ error: true, message: "Note not found" });
     }
 
-    await Note.deleteOne({ _id: noteId,userId: user._id });
+    await Note.deleteOne({});
+
+    console.log('Note deleted successfully');
 
     return res.json({
-      error:false,
-      message:"Note deleted successfully",
+      error: false,
+      message: "Note deleted successfully",
     });
-  } catch (error){
+  } catch (error) {
+    console.error('Error deleting note:', error.message);
     return res.status(500).json({
       error: true,
       message: "Internal server error",
     });
   }
-})
+});
+
+
 // update isPinned
 app.put('/update-note-pinned/:noteId', authenticateToken, async (req, res) => {
-  const noteId = req.params.noteId;
+  //const noteId = req.params.noteId;
   const { isPinned } = req.body;
-  const userId = req.user.userId;
+  //const userId = req.user.userId;
 
   try {
-    const note = await Note.findOne({ _id: noteId, userId });
+    const note = await Note.findOne({});
 
     if (!note) {
       return res.status(404).json({ error: true, message: "Note not found" });
     }
 
-    if (typeof isPinned !== 'undefined') note.isPinned = isPinned || false;
+    note.isPinned = isPinned;
 
     await note.save();
 
@@ -320,8 +345,6 @@ app.put('/update-note-pinned/:noteId', authenticateToken, async (req, res) => {
     });
   }
 });
-
-
 
 
 app.listen(8000, () => {
