@@ -58,6 +58,7 @@ const AddEditNotes = ({ noteData, type, getAllNotes,  onClose }) => {
         }
     }
 
+    console.log(title, content);
 
   return (
     <div className='relative'>

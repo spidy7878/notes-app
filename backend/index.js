@@ -209,7 +209,7 @@ app.get('/get-user', authenticateToken, async (req, res) => {
 //Add Note
 app.post('/add-note', authenticateToken, async (req, res) => {
   const { title, content, tags } = req.body;
-  //const userId = req.user.userId;
+  const userId = req.user.userId;
 
   if (!title) return res.status(400).json({ error: true, message: 'Title is required' });
   if (!content) return res.status(400).json({ error: true, message: 'Content is required' });
@@ -219,16 +219,18 @@ app.post('/add-note', authenticateToken, async (req, res) => {
       title,
       content,
       tags: tags || [],
-      //userId
+      userId
     });
 
     await note.save();
 
     res.json({ error: false, note, message: 'Note added successfully' });
+
   } catch (error) {
     console.error('Error adding note:', error.message);
     res.status(500).json({ error: true, message: 'Internal Server Error' });
   }
+  // res.json({ title, content, tags});
 });
 //edit-note
 app.put('/edit-note/:noteId', authenticateToken, async (req, res) => {
