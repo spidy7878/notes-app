@@ -53,11 +53,9 @@ const Home = () => {
   useEffect(() => {
     getUserInfo();
     getAllNotes();
-    return () => {
-    };
   }, [])
   
-  
+  console.log(userInfo);
 
   return (
     <>

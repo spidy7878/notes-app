@@ -183,18 +183,27 @@ app.post('/login', async (req, res) => {
 
 // Get User
 app.get('/get-user', authenticateToken, async (req, res) => {
-    //const { user } = req.user;
+  try {
+    const userId = req.user.userId; // Retrieve user ID from req.user
+    const isUser = await User.findById(userId); // Find user by ID
 
-    const isUser = await User.findOne({});
-
-    if(!isUser){
-      return res.sendStatus(401);
+    if (!isUser) {
+        return res.sendStatus(401);
     }
 
     return res.json({
-      user: { fullName: isUser.fullName, email: isUser.email, "_id": isUser._id, createdOn: isUser.createdOn},
-      message: " ",
+        user: {
+            fullName: isUser.fullName,
+            email: isUser.email,
+            _id: isUser._id,
+            createdOn: isUser.createdOn
+        },
+        message: "User info retrieved successfully",
     });
+} catch (error) {
+    console.error('Error fetching user:', error);
+    return res.sendStatus(500);
+}
 });
 
 //Add Note
