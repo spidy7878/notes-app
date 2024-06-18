@@ -292,13 +292,11 @@ app.put('/edit-note/:noteId', authenticateToken, async (req, res) => {
 
 // get all notes
 app.get('/get-all-notes', authenticateToken, async (req, res) => {
-  // const userId = req.users; // Destructure correctly to get userId
-  // console.log('Fetching notes for user:', userId); // Log the userId
-  // console.log("Request Object", req);
+  const userId = req.user.userId; // Correctly destructure to get userId
 
   try {
-    // const notes = await Note.find({ userId }).sort({ isPinned: -1 });
-    const notes = await Note.find({});
+    // Fetch notes belonging to the authenticated user and sort by isPinned
+    const notes = await Note.find({ userId }).sort({ isPinned: -1 });
 
     console.log('Notes found:', notes); // Log the notes found
 
@@ -315,6 +313,7 @@ app.get('/get-all-notes', authenticateToken, async (req, res) => {
     });
   }
 });
+
 // delete note
 app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
   try {

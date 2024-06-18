@@ -71,14 +71,9 @@ const AddEditNotes = ({ noteData, type, getAllNotes,  onClose, showToastMessage 
 
         setError("");
 
-        if(type === 'edit')
-        {
-            editNote()
-        }
-        else
-        {
-            addNewNote()
-        }
+        if(type === 'edit') editNote()
+        else addNewNote()
+        
     }
 
     console.log(title, content);
